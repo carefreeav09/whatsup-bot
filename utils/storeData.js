@@ -1,13 +1,34 @@
 const fs = require("fs");
 const { google } = require("googleapis");
+const dotenv = require("dotenv");
+dotenv.config();
 
 function loadClientSecrets(callback) {
   // Load client secrets from a local file.
-  fs.readFile("client_secret.json", (err, content) => {
-    if (err) return console.log("Error loading client secret file:", err);
-    // Authorize a client with credentials, then call the Google Sheets API.
-    authorize(JSON.parse(content), callback);
-  });
+  const credentials = {
+    installed: {
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      project_id: process.env.PROJECT_ID,
+      auth_uri: process.env.AUTH_URI,
+      token_uri: process.env.TOKEN_URI,
+      auth_provider_x509_cert_url: process.env.AUTH_PROVIDER_X509_CERT_URL,
+      client_secret: process.env.CLIENT_SECRET,
+      redirect_uris: [process.env.REDIRECT_URIS],
+    },
+  };
+
+  if (
+    !credentials.installed.client_id ||
+    !credentials.installed.client_secret
+  ) {
+    console.log(
+      "No client secret found. Please ensure that .env file exists and has valid client secrets."
+    );
+    return;
+  }
+
+  // Authorize a client with credentials, then call the Google Sheets API.
+  authorize(credentials, callback);
 }
 
 function authorize(credentials, callback) {
@@ -18,17 +39,22 @@ function authorize(credentials, callback) {
     redirect_uris[0]
   );
 
-  // Check if we have previously stored a token.
-  fs.readFile("token.json", (err, token) => {
-    if (err) {
-      console.log(
-        "No token found. Please ensure that token.json file exists and has a valid token."
-      );
-      return;
-    }
-    oAuth2Client.setCredentials(JSON.parse(token));
-    callback(oAuth2Client);
-  });
+  const token = {
+    access_token: process.env.ACCESS_TOKEN,
+    refresh_token: process.env.REFRESH_TOKEN,
+    scope: process.env.SCOPE,
+    token_type: process.env.TOKEN_TYPE,
+  };
+
+  if (!token.access_token || !token.refresh_token) {
+    console.log(
+      "No token found. Please ensure that .env file exists and has valid tokens."
+    );
+    return;
+  }
+
+  oAuth2Client.setCredentials(token);
+  callback(oAuth2Client);
 }
 
 function storeData(auth, data) {
