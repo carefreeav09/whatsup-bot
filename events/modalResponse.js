@@ -1,4 +1,5 @@
 const { Events } = require("discord.js");
+const { initiateStoringProcess } = require("../utils/storeData.js");
 
 module.exports = {
   name: Events.InteractionCreate,
@@ -11,6 +12,9 @@ module.exports = {
       });
     }
 
+    //
+    const username = interaction.user.username;
+
     // Get the data entered by the user
     const updatesForYesterday = interaction.fields.getTextInputValue(
       "updatesForYesterday"
@@ -19,15 +23,19 @@ module.exports = {
     const updatesForToday =
       interaction.fields.getTextInputValue("updatesForToday");
 
-    const updatesForTomorrow =
-      interaction.fields.getTextInputValue("updatesForTomorrow");
-
     const anythingInteresting =
       interaction.fields.getTextInputValue("interestingField");
     console.log({
+      username,
       updatesForYesterday,
       updatesForToday,
-      updatesForTomorrow,
+      anythingInteresting,
+    });
+
+    initiateStoringProcess({
+      username,
+      updatesForYesterday,
+      updatesForToday,
       anythingInteresting,
     });
   },

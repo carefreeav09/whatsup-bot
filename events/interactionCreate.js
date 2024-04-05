@@ -35,14 +35,6 @@ module.exports = {
         // Short means only a single line of text
         .setStyle(TextInputStyle.Short);
 
-      // Create the text input components
-      const updatesForTomorrow = new TextInputBuilder()
-        .setCustomId("updatesForTomorrow")
-        // The label is the prompt the user sees for this input
-        .setLabel("What are your plans for Tomorrow?")
-        // Short means only a single line of text
-        .setStyle(TextInputStyle.Short);
-
       const anythingInteresting = new TextInputBuilder()
         .setCustomId("interestingField")
         .setLabel("Did you do anything interesteing yesterday?")
@@ -57,20 +49,12 @@ module.exports = {
       const secondActionRow = new ActionRowBuilder().addComponents(
         updatesForToday
       );
-      const thirdActionRow = new ActionRowBuilder().addComponents(
-        updatesForTomorrow
-      );
       const interestingField = new ActionRowBuilder().addComponents(
         anythingInteresting
       );
 
       // Add inputs to the modal
-      modal.addComponents(
-        firstActionRow,
-        secondActionRow,
-        thirdActionRow,
-        interestingField
-      );
+      modal.addComponents(firstActionRow, secondActionRow, interestingField);
 
       // Show the modal to the user
       await interaction.showModal(modal);
